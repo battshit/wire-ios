@@ -25,9 +25,12 @@ final class CallStatusViewTests: ZMSnapshotTestCase {
 
     override func setUp() {
         super.setUp()
-        recordMode = true
         snapshotBackgroundColor = .white
         sut = CallStatusView(configuration: .init(state: .connecting, type: .audio, variant: .dark, title: "Italy Trip"))
+        sut.translatesAutoresizingMaskIntoConstraints = false
+        sut.widthAnchor.constraint(equalToConstant: 320).isActive = true
+        sut.setNeedsLayout()
+        sut.layoutIfNeeded()
     }
     
     override func tearDown() {
@@ -71,6 +74,7 @@ final class CallStatusViewTests: ZMSnapshotTestCase {
     
     func testIncomingVideoLight() {
         // When
+        snapshotBackgroundColor = .black
         sut.configuration = .init(state: .ringingIncoming(name: "Ulrike"), type: .video, variant: .light, title: "Italy Trip")
         
         // Then
@@ -88,7 +92,7 @@ final class CallStatusViewTests: ZMSnapshotTestCase {
     
     func testOutgoingLight() {
         // When
-        sut.configuration = .init(state: .ringingOutgoing, type: .video, variant: .light, title: "Italy Trip")
+        sut.configuration = .init(state: .ringingOutgoing, type: .audio, variant: .light, title: "Italy Trip")
         
         // Then
         verify(view: sut)
@@ -105,7 +109,7 @@ final class CallStatusViewTests: ZMSnapshotTestCase {
     
     func testEstablishedBriefLight() {
         // When
-        sut.configuration = .init(state: .established(duration: 42), type: .video, variant: .light, title: "Italy Trip")
+        sut.configuration = .init(state: .established(duration: 42), type: .audio, variant: .light, title: "Italy Trip")
         
         // Then
         verify(view: sut)
@@ -122,7 +126,7 @@ final class CallStatusViewTests: ZMSnapshotTestCase {
     
     func testEstablishedLongLight() {
         // When
-        sut.configuration = .init(state: .established(duration: 321), type: .video, variant: .light, title: "Italy Trip")
+        sut.configuration = .init(state: .established(duration: 321), type: .audio, variant: .light, title: "Italy Trip")
         
         // Then
         verify(view: sut)
@@ -139,7 +143,7 @@ final class CallStatusViewTests: ZMSnapshotTestCase {
     
     func testReconnectingLight() {
         // When
-        sut.configuration = .init(state: .reconnecting, type: .video, variant: .light, title: "Italy Trip")
+        sut.configuration = .init(state: .reconnecting, type: .audio, variant: .light, title: "Italy Trip")
         
         // Then
         verify(view: sut)
@@ -156,7 +160,7 @@ final class CallStatusViewTests: ZMSnapshotTestCase {
     
     func testEndingLight() {
         // When
-        sut.configuration = .init(state: .terminating, type: .video, variant: .light, title: "Italy Trip")
+        sut.configuration = .init(state: .terminating, type: .audio, variant: .light, title: "Italy Trip")
         
         // Then
         verify(view: sut)

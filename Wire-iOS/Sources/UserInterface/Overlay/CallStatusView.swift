@@ -67,6 +67,9 @@ final class CallStatusView: UIView {
     private func setupViews() {
         addSubview(stackView)
         stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 12
         [titleLabel, subtitleLabel].forEach {
             stackView.addArrangedSubview($0)
@@ -84,7 +87,7 @@ final class CallStatusView: UIView {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             stackView.topAnchor.constraint(equalTo: topAnchor),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
-            ])
+        ])
     }
     
     private func updateConfiguration() {
@@ -104,7 +107,7 @@ fileprivate extension CallStatusView.Configuration {
     private static let formatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.minute, .second]
-        formatter.zeroFormattingBehavior = .default
+        formatter.zeroFormattingBehavior = DateComponentsFormatter.ZeroFormattingBehavior(rawValue: 0)
         return formatter
     }()
     
@@ -121,7 +124,8 @@ fileprivate extension CallStatusView.Configuration {
     }
     
     var effectiveColorVariant: ColorSchemeVariant {
-        return type == .audio && variant == .light ? .dark : .light
+        guard type == .audio else { return .dark }
+        return variant == .dark ? .dark : .light
     }
     
 }
