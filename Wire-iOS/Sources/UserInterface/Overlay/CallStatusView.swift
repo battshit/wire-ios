@@ -20,14 +20,15 @@ import UIKit
 import WireExtensionComponents
 
 final class CallStatusView: UIView {
+    
     struct Configuration {
         enum CallType {
             case audio, video
         }
-
+        
         enum State {
             case connecting
-            case ringingIncoming(name: String, type: CallType) // Caller name + call type "XYZ is (video) calling..."
+            case ringingIncoming(name: String) // Caller name + call type "XYZ is (video) calling..."
             case ringingOutgoing // "Ringing..."
             case established(duration: TimeInterval) // Call duration in seconds "04:18"
             case reconnecting // "Reconnecting..."
@@ -83,47 +84,44 @@ final class CallStatusView: UIView {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             stackView.topAnchor.constraint(equalTo: topAnchor),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
+            ])
     }
     
     private func updateConfiguration() {
         titleLabel.text = configuration.title
-        subtitleLabel.text = configuration.state.displayString
+        subtitleLabel.text = configuration.displayString
         [titleLabel, subtitleLabel].forEach {
             $0.textColor = .wr_color(fromColorScheme: ColorSchemeColorTextForeground, variant: configuration.effectiveColorVariant)
         }
     }
-
+    
 }
 
 // MARK: - Helper
 
-fileprivate extension CallStatusView.Configuration.State {
+fileprivate extension CallStatusView.Configuration {
     
     private static let formatter: DateComponentsFormatter = {
-       let formatter = DateComponentsFormatter()
+        let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.minute, .second]
         formatter.zeroFormattingBehavior = .default
         return formatter
     }()
     
     var displayString: String {
-        switch self {
+        switch state {
         case .connecting: return "call.status.connecting".localized
-        case .ringingIncoming(name: let name, type: .audio): return "call.status.incoming.audio".localized(args: name)
-        case .ringingIncoming(name: let name, type: .video): return "call.status.incoming.video".localized(args: name)
+        case .ringingIncoming(name: let name) where type == .audio: return "call.status.incoming.audio".localized(args: name)
+        case .ringingIncoming(name: let name): return "call.status.incoming.video".localized(args: name)
         case .ringingOutgoing: return "call.status.outgoing".localized
-        case .established(duration: let duration): return CallStatusView.Configuration.State.formatter.string(from: duration) ?? ""
+        case .established(duration: let duration): return CallStatusView.Configuration.formatter.string(from: duration) ?? ""
         case .reconnecting: return "call.status.reconnecting".localized
         case .terminating: return "call.status.terminating".localized
         }
     }
-
-}
-
-extension CallStatusView.Configuration {
     
     var effectiveColorVariant: ColorSchemeVariant {
         return type == .audio && variant == .light ? .dark : .light
     }
+    
 }
